@@ -6,9 +6,16 @@
     xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:local="clr-namespace:WinBaseSoftwareInstall.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:WinBaseSoftwareInstall.ViewModels"
     Title="WinBaseSoftwareInstall | made by J0nathan550 | v1.0.0.0"
-    Width="800"
-    Height="450"
+    Width="640"
+    Height="480"
+    d:DataContext="{d:DesignInstance Type=viewModel:MainWindowViewModel}"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Grid />
+    <Grid>
+        <Button Command="{Binding SaveRelayCommand}">
+            <TextBlock Text="Save Fake Data..." />
+        </Button>
+    </Grid>
 </Window>
