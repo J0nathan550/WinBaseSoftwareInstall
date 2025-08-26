@@ -1,8 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.Windows.Controls;
 
 namespace WinBaseSoftwareInstall.Interfaces;
 
 public interface IMainWindowViewModel
 {
-    IAsyncRelayCommand SaveRelayCommand { get; }
+    string Title { get; }
+    UserControl TitleBarUserControl { get; }
 }

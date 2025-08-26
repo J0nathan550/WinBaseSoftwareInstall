@@ -4,9 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:hc="https://handyorg.github.io/handycontrol"
-    xmlns:local="clr-namespace:WinBaseSoftwareInstall.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModel="clr-namespace:WinBaseSoftwareInstall.ViewModels"
+    xmlns:views="clr-namespace:WinBaseSoftwareInstall.Views"
     Title="{Binding Title}"
     Width="640"
     Height="480"
@@ -15,11 +15,10 @@
     Icon="/Assets/iconApp.ico"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
+    <hc:Window.NonClientAreaContent>
+        <UserControl Content="{Binding TitleBarUserControl}" />
+    </hc:Window.NonClientAreaContent>
     <Border Background="{DynamicResource MainContentForegroundDrawingBrush}">
-        <Grid>
-            <Button Command="{Binding SaveRelayCommand}">
-                <TextBlock Text="Save Fake Data..." />
-            </Button>
-        </Grid>
+        <Grid />
     </Border>
 </hc:Window>

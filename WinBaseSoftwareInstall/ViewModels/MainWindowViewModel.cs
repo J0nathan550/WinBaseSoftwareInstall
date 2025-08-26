@@ -1,51 +1,33 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using System.Windows.Controls;
 using WinBaseSoftwareInstall.Interfaces;
+using WinBaseSoftwareInstall.Views;
 
 namespace WinBaseSoftwareInstall.ViewModels;
 
 public class MainWindowViewModel : IMainWindowViewModel
 {
-    private readonly ILogger<MainWindowViewModel> _logger;
-    private readonly IUserService _userService;
-
-    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, IUserService userService)
-    {
-        _logger = logger;
-        _userService = userService;
-    }
-
-    private IAsyncRelayCommand? _saveRelayCommand;
-    public IAsyncRelayCommand SaveRelayCommand
-    {
-        get
+    public string Title 
+    { 
+        get 
         {
-            _saveRelayCommand ??= new AsyncRelayCommand(ExecuteSaveAsyncCommand);
-            return _saveRelayCommand;
-        }
-    }
+            Assembly? entryAssembly = Assembly.GetEntryAssembly();
+            string appName = entryAssembly?.GetName().Name ?? "Unknown App";
+            string companyName = entryAssembly?.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company ?? "Unknown Company";
+            string version = entryAssembly?.GetName().Version?.ToString() ?? "Unknown Version";
 
-    public static string Title
-    {
-        get
-        {
-            string title = $"{Assembly.GetExecutingAssembly().GetName().Name} | by {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).CompanyName} | v{Assembly.GetExecutingAssembly().GetName().Version}";
+            string title = $"{appName} | by {companyName} | v{version}";
             return title;
         }
     }
 
-    private async Task ExecuteSaveAsyncCommand()
+    public UserControl TitleBarUserControl
     {
-        try
+        get
         {
-            _logger.LogInformation("Save command executed");
-            await _userService.SaveUserDataAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during save operation");
+            TitleBarNonClientView titleBarNonClientView = App.ServiceProvider!.GetRequiredService<TitleBarNonClientView>();
+            return titleBarNonClientView;
         }
     }
 }

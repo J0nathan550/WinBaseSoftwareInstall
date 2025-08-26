@@ -4,7 +4,7 @@ using Serilog;
 using System.IO;
 using System.Windows;
 using WinBaseSoftwareInstall.Interfaces;
-using WinBaseSoftwareInstall.Services;
+// using WinBaseSoftwareInstall.Services;
 using WinBaseSoftwareInstall.ViewModels;
 using WinBaseSoftwareInstall.Views;
 
@@ -12,7 +12,7 @@ namespace WinBaseSoftwareInstall;
 
 public partial class App : Application
 {
-    private IServiceProvider? _serviceProvider;
+    public static IServiceProvider? ServiceProvider { get; private set; }
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -23,9 +23,9 @@ public partial class App : Application
         ServiceCollection serviceCollection = new();
         ConfigureServices(serviceCollection);
 
-        _serviceProvider = serviceCollection.BuildServiceProvider();
+        ServiceProvider = serviceCollection.BuildServiceProvider();
 
-        MainWindowView mainWindow = _serviceProvider.GetRequiredService<MainWindowView>();
+        MainWindowView mainWindow = ServiceProvider.GetRequiredService<MainWindowView>();
         mainWindow.Show();
     }
 
@@ -105,6 +105,7 @@ public partial class App : Application
         finally
         {
             Log.Error(exception, message);
+            Current.Shutdown();
         }
     }
 
@@ -115,18 +116,19 @@ public partial class App : Application
         {
             builder.ClearProviders(); // Remove default providers
             builder.AddSerilog(dispose: true); // Add Serilog
-#if DEBUG
-            builder.AddDebug();
-#endif
         });
 
         // Register Services
-        services.AddSingleton<IUserService, UserService>();
+        // services.AddSingleton<IUserService, UserService>();
 
         // Register ViewModels
+        services.AddSingleton<ITitleBarNonClientViewModel, TitleBarNonClientViewModel>();
+        services.AddTransient<IConfigDialogViewModel, ConfigDialogViewModel>();
         services.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
 
         // Register Views
+        services.AddSingleton<TitleBarNonClientView>();
+        services.AddTransient<ConfigDialogView>();
         services.AddSingleton<MainWindowView>();
     }
 
@@ -134,7 +136,7 @@ public partial class App : Application
     {
         Log.Information("Application shutting down...");
 
-        if (_serviceProvider is IDisposable disposable)
+        if (ServiceProvider is IDisposable disposable)
         {
             disposable.Dispose();
         }
