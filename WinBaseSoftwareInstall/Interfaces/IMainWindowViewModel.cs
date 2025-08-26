@@ -1,9 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 
-namespace WinBaseSoftwareInstall.Interfaces
+namespace WinBaseSoftwareInstall.Interfaces;
+
+public interface IMainWindowViewModel
 {
-    public interface IMainWindowViewModel
-    {
-        IAsyncRelayCommand SaveRelayCommand { get; }
-    }
+    IAsyncRelayCommand SaveRelayCommand { get; }
 }

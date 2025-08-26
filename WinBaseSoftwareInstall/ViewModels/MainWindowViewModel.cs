@@ -1,46 +1,51 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Reflection;
 using WinBaseSoftwareInstall.Interfaces;
 
-namespace WinBaseSoftwareInstall.ViewModels
+namespace WinBaseSoftwareInstall.ViewModels;
+
+public class MainWindowViewModel : IMainWindowViewModel
 {
-    public class MainWindowViewModel : IMainWindowViewModel
+    private readonly ILogger<MainWindowViewModel> _logger;
+    private readonly IUserService _userService;
+
+    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, IUserService userService)
     {
-        private readonly ILogger<MainWindowViewModel> _logger;
-        private readonly IUserService _userService;
+        _logger = logger;
+        _userService = userService;
+    }
 
-        public MainWindowViewModel(ILogger<MainWindowViewModel> logger, IUserService userService)
+    private IAsyncRelayCommand? _saveRelayCommand;
+    public IAsyncRelayCommand SaveRelayCommand
+    {
+        get
         {
-            _logger = logger;
-            _userService = userService;
+            _saveRelayCommand ??= new AsyncRelayCommand(ExecuteSaveAsyncCommand);
+            return _saveRelayCommand;
         }
+    }
 
-        private IAsyncRelayCommand _saveRelayCommand;
-        public IAsyncRelayCommand SaveRelayCommand
+    public static string Title
+    {
+        get
         {
-            get
-            {
-                if (_saveRelayCommand == null)
-                {
-                    _saveRelayCommand = new AsyncRelayCommand(ExecuteSaveAsyncCommand);
-                }
-                return _saveRelayCommand;
-            }
+            string title = $"{Assembly.GetExecutingAssembly().GetName().Name} | by {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).CompanyName} | v{Assembly.GetExecutingAssembly().GetName().Version}";
+            return title;
         }
+    }
 
-        private async Task ExecuteSaveAsyncCommand()
+    private async Task ExecuteSaveAsyncCommand()
+    {
+        try
         {
-            try
-            {
-                _logger.LogInformation("Save command executed");
-                await _userService.SaveUserDataAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during save operation");
-            }
+            _logger.LogInformation("Save command executed");
+            await _userService.SaveUserDataAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during save operation");
         }
     }
 }

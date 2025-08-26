@@ -1,14 +1,11 @@
-﻿using System.Windows;
-using WinBaseSoftwareInstall.Interfaces;
+﻿using WinBaseSoftwareInstall.Interfaces;
+namespace WinBaseSoftwareInstall.Views;
 
-namespace WinBaseSoftwareInstall.Views
+public partial class MainWindowView : HandyControl.Controls.Window
 {
-    public partial class MainWindowView : Window
+    public MainWindowView(IMainWindowViewModel mainWindowViewModel)
     {
-        public MainWindowView(IMainWindowViewModel mainWindowViewModel)
-        {
-            InitializeComponent();
-            DataContext = mainWindowViewModel;
-        }
+        InitializeComponent();
+        DataContext = mainWindowViewModel;
     }
 }

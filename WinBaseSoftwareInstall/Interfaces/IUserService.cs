@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿namespace WinBaseSoftwareInstall.Interfaces;
 
-namespace WinBaseSoftwareInstall.Interfaces
+public interface IUserService
 {
-    public interface IUserService
-    {
-        Task SaveUserDataAsync();
-    }
+    Task SaveUserDataAsync();
 }

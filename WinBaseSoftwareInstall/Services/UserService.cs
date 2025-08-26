@@ -1,23 +1,21 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using WinBaseSoftwareInstall.Interfaces;
 
-namespace WinBaseSoftwareInstall.Services
+namespace WinBaseSoftwareInstall.Services;
+
+public class UserService : IUserService
 {
-    public class UserService : IUserService
+    private readonly ILogger<UserService> _logger;
+
+    public UserService(ILogger<UserService> logger)
     {
-        private readonly ILogger<UserService> _logger;
+        _logger = logger;
+    }
 
-        public UserService(ILogger<UserService> logger)
-        {
-            _logger = logger;
-        }
-
-        public async Task SaveUserDataAsync()
-        {
-            _logger.LogInformation("Starting to save user data");
-            await Task.Delay(1000);
-            _logger.LogInformation("User data saved successfully");
-        }
+    public async Task SaveUserDataAsync()
+    {
+        _logger.LogInformation("Starting to save user data");
+        await Task.Delay(1000);
+        _logger.LogInformation("User data saved successfully");
     }
 }
