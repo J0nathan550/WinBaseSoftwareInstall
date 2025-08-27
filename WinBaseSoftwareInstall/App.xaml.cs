@@ -7,6 +7,10 @@ using WinBaseSoftwareInstall.Interfaces;
 // using WinBaseSoftwareInstall.Services;
 using WinBaseSoftwareInstall.ViewModels;
 using WinBaseSoftwareInstall.Views;
+#if !DEBUG
+    using System.Diagnostics;
+    using MessageBox = HandyControl.Controls.MessageBox;
+#endif
 
 namespace WinBaseSoftwareInstall;
 
@@ -14,30 +18,38 @@ public partial class App : Application
 {
     public static IServiceProvider? ServiceProvider { get; private set; }
 
+    private string _logsPath = string.Empty;
+    private MainWindowView? _mainWindowView;
+#if !DEBUG
+    private const string GITHUB_REPOSITORY = "https://github.com/J0nathan550/WinBaseSoftwareInstall";
+#endif
+
     protected override void OnStartup(StartupEventArgs e)
     {
         ConfigureSerilog();
 
+#if !DEBUG
         SetupExceptionHandling();
+#endif
 
         ServiceCollection serviceCollection = new();
         ConfigureServices(serviceCollection);
 
         ServiceProvider = serviceCollection.BuildServiceProvider();
 
-        MainWindowView mainWindow = ServiceProvider.GetRequiredService<MainWindowView>();
-        mainWindow.Show();
+        _mainWindowView = ServiceProvider.GetRequiredService<MainWindowView>();
+        _mainWindowView.Show();
     }
 
-    private static void ConfigureSerilog()
+    private void ConfigureSerilog()
     {
-        string logPath = Path.Combine(
+        _logsPath = Path.Combine(
                         AppDomain.CurrentDomain.BaseDirectory,
                         "Logs",
                         "app.log"
                     );
 
-        string logDirectory = Path.GetDirectoryName(logPath)!;
+        string logDirectory = Path.GetDirectoryName(_logsPath)!;
         if (!Directory.Exists(logDirectory))
         {
             Directory.CreateDirectory(logDirectory);
@@ -51,7 +63,7 @@ public partial class App : Application
             .Enrich.WithThreadId()
             .Enrich.WithProcessId()
             .WriteTo.File(
-                logPath,
+                _logsPath,
                 rollingInterval: RollingInterval.Day,
                 retainedFileCountLimit: 7, // Keep logs for 7 days
                 fileSizeLimitBytes: 10 * 1024 * 1024, // 10MB per file
@@ -61,7 +73,7 @@ public partial class App : Application
             .WriteTo.Console(
                 outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}"
             )
-#if DEBUG
+#if !DEBUG
             .WriteTo.Debug(
                 outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}"
             )
@@ -69,11 +81,13 @@ public partial class App : Application
             .CreateLogger();
 
         Log.Information("Application starting up...");
-        Log.Information("Log files will be saved to: {LogPath}", logPath);
+        Log.Information("Log files will be saved to: {LogPath}", _logsPath);
     }
 
+#if !DEBUG
     private void SetupExceptionHandling()
     {
+
         AppDomain.CurrentDomain.UnhandledException += (s, e) =>
                    LogUnhandledException((Exception)e.ExceptionObject, "AppDomain.CurrentDomain.UnhandledException");
 
@@ -90,7 +104,7 @@ public partial class App : Application
         };
     }
 
-    private static void LogUnhandledException(Exception exception, string source)
+    private void LogUnhandledException(Exception exception, string source)
     {
         string message = $"Unhandled exception ({source})";
         try
@@ -105,9 +119,47 @@ public partial class App : Application
         finally
         {
             Log.Error(exception, message);
+        }
+
+        ShowFatalCrashDialog();
+    }
+
+    private void ShowFatalCrashDialog()
+    {
+        Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+        try
+        {
+            _mainWindowView?.Close();
+
+            MessageBoxResult result = MessageBox.Show($"There was unhandled error in the program. If issue keep coming back send report to GitHub!\n\n\nPress `Yes` to open GitHub repository, after create issues to report the bug.\n\n\nAfter pressing any of the buttons program will shutdown. Check Logs for full information.\n\n\nLogs Output: {_logsPath}", "Fatal Crash!", MessageBoxButton.YesNo, MessageBoxImage.Error);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = GITHUB_REPOSITORY,
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Couldn't open browser link: {e}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Error in crash dialog: {ex}");
+        }
+        finally
+        {
             Current.Shutdown();
         }
     }
+#endif
 
     private static void ConfigureServices(IServiceCollection services)
     {

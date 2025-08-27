@@ -7,23 +7,75 @@
     xmlns:local="clr-namespace:WinBaseSoftwareInstall.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Border
-        Width="400"
-        Height="247"
-        Background="#1c1c1c"
-        CornerRadius="10">
-        <hc:SimplePanel>
-            <Button
-                Width="22"
-                Height="22"
-                Margin="0,4,4,0"
-                Padding="0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                hc:IconElement.Geometry="{StaticResource ErrorGeometry}"
-                Command="hc:ControlCommands.Close"
-                Foreground="{DynamicResource PrimaryBrush}"
-                Style="{StaticResource ButtonIcon}" />
-        </hc:SimplePanel>
-    </Border>
+    <hc:TransitioningContentControl>
+        <Border
+            Width="400"
+            Height="247"
+            Background="#1c1c1c"
+            CornerRadius="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Button
+                    Width="22"
+                    Height="22"
+                    Margin="0,4,4,0"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    hc:IconElement.Geometry="{StaticResource ErrorGeometry}"
+                    Command="hc:ControlCommands.Close"
+                    Foreground="{DynamicResource PrimaryBrush}"
+                    Style="{StaticResource ButtonIcon}" />
+                <TextBlock
+                    Foreground="White"
+                    Style="{StaticResource TextBlockTitle}"
+                    Text="Config"
+                    TextAlignment="Center"
+                    TextTrimming="CharacterEllipsis" />
+                <hc:ScrollViewer
+                    Grid.Row="1"
+                    Margin="10"
+                    IsInertiaEnabled="True">
+                    <hc:UniformSpacingPanel Orientation="Vertical" Spacing="10">
+                        <hc:ComboBox hc:InfoElement.Title="Select Language:" SelectedIndex="0">
+                            <ComboBoxItem>
+                                <TextBlock Text="English" />
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <TextBlock Text="Russian" />
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <TextBlock Text="Ukrainian" />
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <TextBlock Text="Italian" />
+                            </ComboBoxItem>
+                        </hc:ComboBox>
+                        <hc:ElementGroup
+                            hc:InfoElement.Title="Default Application Install Folder:"
+                            Layout="Stack"
+                            Orientation="Horizontal">
+                            <hc:ElementGroup.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ItemsPanelTemplate>
+                            </hc:ElementGroup.ItemsPanel>
+                            <hc:TextBox hc:InfoElement.Placeholder="C:\Users\User\Programs" hc:InfoElement.Title="Default Application Install Folder:" />
+                            <Button Grid.Column="1" VerticalAlignment="Bottom">
+                                <TextBlock Text="..." />
+                            </Button>
+                        </hc:ElementGroup>
+                    </hc:UniformSpacingPanel>
+                </hc:ScrollViewer>
+            </Grid>
+        </Border>
+    </hc:TransitioningContentControl>
 </UserControl>
