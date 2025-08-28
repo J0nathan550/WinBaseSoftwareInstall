@@ -8,8 +8,8 @@
     xmlns:viewModel="clr-namespace:WinBaseSoftwareInstall.ViewModels"
     xmlns:views="clr-namespace:WinBaseSoftwareInstall.Views"
     Title="{Binding Title}"
-    Width="640"
-    Height="480"
+    Width="800"
+    Height="600"
     d:DataContext="{d:DesignInstance Type=viewModel:MainWindowViewModel}"
     Background="{DynamicResource MainContentBackgroundBrush}"
     Icon="/Assets/iconApp.ico"
@@ -19,6 +19,34 @@
         <UserControl Content="{Binding TitleBarUserControl}" />
     </hc:Window.NonClientAreaContent>
     <Border Background="{DynamicResource MainContentForegroundDrawingBrush}">
-        <Grid />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="250"
+                    MinWidth="22"
+                    MaxWidth="400" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <UserControl Content="{Binding ApplicationsMenuUserControl}" />
+            <GridSplitter
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Transparent"
+                MouseEnter="GridSplitter_MouseEnter"
+                MouseLeave="GridSplitter_MouseLeave" />
+            <hc:Divider
+                x:Name="DividerElement"
+                Grid.Column="1"
+                Margin="0,20,0,20"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Stretch"
+                Panel.ZIndex="2"
+                LineStroke="Transparent"
+                LineStrokeDashArray="1,0"
+                LineStrokeThickness="1"
+                Orientation="Vertical" />
+        </Grid>
     </Border>
 </hc:Window>

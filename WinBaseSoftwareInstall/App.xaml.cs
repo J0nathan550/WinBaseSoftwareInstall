@@ -176,11 +176,13 @@ public partial class App : Application
         // Register ViewModels
         services.AddSingleton<ITitleBarNonClientViewModel, TitleBarNonClientViewModel>();
         services.AddTransient<IConfigDialogViewModel, ConfigDialogViewModel>();
+        services.AddTransient<IApplicationsMenuViewModel, ApplicationsMenuViewModel>();
         services.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
 
         // Register Views
         services.AddSingleton<TitleBarNonClientView>();
         services.AddTransient<ConfigDialogView>();
+        services.AddSingleton<ApplicationMenuView>();
         services.AddSingleton<MainWindowView>();
     }
 

@@ -6,4 +6,5 @@ public interface IMainWindowViewModel
 {
     string Title { get; }
     UserControl TitleBarUserControl { get; }
+    UserControl ApplicationsMenuUserControl { get; }
 }
